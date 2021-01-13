@@ -2,16 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.welcome.playerwithservice">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
+        android:name=".MyNotifyPlayerApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PlayerWithService">
-        <service
-            android:name=".PlayerService"></service>
+        <activity android:name=".NotifyActivity"></activity>
+
+        <service android:name=".PlayerService" />
 
         <activity android:name=".MainActivity">
             <intent-filter>

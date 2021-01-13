@@ -1,5 +1,9 @@
 package com.welcome.playerwithservice;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioAttributes;
@@ -11,10 +15,11 @@ import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-
+import static com.welcome.playerwithservice.MyNotifyPlayerApp.CHANNEL_ID;
 import java.io.IOException;
 
 public class PlayerService extends Service {
@@ -23,6 +28,7 @@ public class PlayerService extends Service {
     private boolean playWhenReady = true;
     private int currentWindow = 0;
     private long playbackPosition = 0;
+   // static String CHANNEL_ID="FOREGROUNDsERVICE";
     public PlayerService() {
     }
 
@@ -43,9 +49,38 @@ public class PlayerService extends Service {
     /* player=new MediaPlayer().create(this, Settings.System.DEFAULT_RINGTONE_URI);
       player.start();*/
         initializePlayer1();
+        sendNotification();
         return START_STICKY;
     }
-   private void initializePlayer1() {
+
+    /**
+     * create notification channel like this or else we can create the channel for entire app
+     */
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Foreground Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(serviceChannel);
+        }
+    }
+    private void sendNotification() {
+        Log.d("geertnoti","notifymeee");
+        //createNotificationChannel();
+        Intent intent=new Intent(this,MainActivity.class);
+        PendingIntent pendingIntent=PendingIntent.getActivity(this,0,intent,0);
+
+        Notification notification= new NotificationCompat.Builder(this,CHANNEL_ID).setContentText("Playerwelcome")
+                .setContentTitle("hiii").setContentIntent(pendingIntent).setSmallIcon(R.drawable.notify).build();
+        startForeground(1,notification);
+
+    }
+
+    private void initializePlayer1() {
        exoPlayer=new SimpleExoPlayer.Builder(this).build();
         MediaItem mediaItem=MediaItem.fromUri(Uri.parse("https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3"));
         exoPlayer.setMediaItem(mediaItem);
